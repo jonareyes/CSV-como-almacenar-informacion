@@ -1,5 +1,6 @@
 require "csv"
 require "faker"
+require "date"
 
 class Person
 	attr_accessor :first_name, :last_name, :email, :phone, :created_at
@@ -40,9 +41,27 @@ class PersonWriter
 	end
 end
 
-# person_writer = PersonWriter.new
-# people = Person.new()
+class PersonParser
 
-people = Person.personas(8)
+	def initialize(file)
+		@file = file
+	end
+
+	def people
+		persons = []
+		CSV.open(@file, "r") do |csv|
+			csv.each do |person|
+				persons << Person.new(person[0], person[1], person[2], person[3], person[4])
+			end		
+		end
+		persons	
+	end
+end
+
+
+people = Person.personas(10)
 person_writer = PersonWriter.new("people.csv", people)
 person_writer.create_csv
+
+parser = PersonParser.new('people.csv')
+p people = parser.people
